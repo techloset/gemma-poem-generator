@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gemma Poem Generator</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #000;
+    }
+
+    .wrapper {
+      position: relative;
+      width: 400px;
+      height: 500px;
+      background: #000;
+      box-shadow: 0 0 50px #0ef;
+      border-radius: 20px;
+      padding: 40px;
+      overflow: hidden;
+    }
+
+    .wrapper:hover {
+      animation: animate 1s linear infinite;
+    }
+
+    @keyframes animate {
+      100% {
+        filter: hue-rotate(360deg);
+      }
+    }
+
+    .form-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      transition: 1s ease-in-out;
+    }
+
+    h2 {
+      font-size: 30px;
+      color: #fff;
+      text-align: center;
+    }
+
+    .input-group {
+      position: relative;
+      margin: 30px 0;
+      border-bottom: 2px solid #fff;
+    }
+
+    .input-group label {
+      position: absolute;
+      top: 50%;
+      left: 5px;
+      transform: translateY(-50%);
+      font-size: 16px;
+      color: #fff;
+      pointer-events: none;
+      transition: .5s;
+    }
+
+    .input-group input,
+    .input-group select {
+      width: 320px;
+      height: 40px;
+      font-size: 16px;
+      color: #fff;
+      padding: 0 5px;
+      background: transparent;
+      border: none;
+      outline: none;
+    }
+
+    .input-group input:focus~label,
+    .input-group input:valid~label,
+    .input-group select:focus~label,
+    .input-group select:valid~label {
+      top: -5px;
+    }
+
+    button {
+      position: relative;
+      width: 100%;
+      height: 40px;
+      background: #0ef;
+      box-shadow: 0 0 10px #0ef;
+      font-size: 16px;
+      color: #000;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 30px;
+      border: none;
+      outline: none;
+    }
+
+
+    .result {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .result p {
+      color: #fff;
+      font-size: 18px;
+    }
+    .input-group select {
+  width: 320px;
+  height: 40px;
+  font-size: 16px;
+  color: #fff;
+  padding: 0 5px;
+  border: none;
+  outline: none;
+}
+
+.input-group select option {
+  background-color: rgba(13, 48, 201, 0.822);
+  color: #fff;
+}
+.mainDiv{
+  color: #fff;
+  margin-right: 200px;
+}
+.result {
+        display: none; /* Initially hide the result */
+        animation: fadeIn 2s forwards; /* Animation to fade in */
+    }
+    .loader {
+      border: 8px solid #f3f3f3;
+      border-top: 8px solid #3498db;
+      border-radius: 50%;
+      width: 100px;
+      height: 100px;
+      animation: spin 1s linear infinite;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-top: -20px;
+      margin-left: -20px;
+      display: none; /* Initially hide the loader */
+    }
+    .dim-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5); /* Adjust the opacity as needed */
+      display: none;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+  </style>
+</head>
+
+<body>
+    <div class="dim-background" id="dimBackground"></div>
+  <div class="mainDiv">
+  <h1 style="font-size: 50px;">Gemma Open Source Model by Google</h1>
+  <div>
+    <table>
+      <tr>
+        <td><img src="../static/me.png" alt="" width="100px" height="100px"></td>
+        <td><h2 style="margin-left: 20px;">Naveed Sarwar - Software Engineer</h2></td>
+      </tr>
+    </table>
+    <div class="loader" id="loader"></div>
+    <div style="width: 300px; margin-left: 300px;">
+      {% if result %}
+          <div id="result" class="result" style="display: inline-block;">
+              <h2>Result</h2>
+              <p>{{ result }}</p>
+          </div>
+      {% endif %}
+  </div>
+</div>    
+   
+</div>
+  <div class="wrapper">
+    <div class="form-wrapper sign-in">
+        <form action="/" method="POST" onsubmit="showLoader()">
+            <h2>Peom Generator</h2>
+            <div class="input-group">
+              <input type="text" name="age" required>
+              <label for="">Age</label>
+            </div>
+            <div class="input-group">
+              <select name="gender" required>
+                <option value="" disabled selected>Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="not_prefer">Not to prefer</option>
+              </select>
+            </div>
+            <button type="submit">Generate</button>
+          </form>
+    </div>
+  </div>
+  <script>
+    function showLoader() {
+      document.getElementById('dimBackground').style.display = 'block';
+      document.getElementById('loader').style.display = 'block';
+    }
+    function hideLoader() {
+      document.getElementById('dimBackground').style.display = 'none';
+    }
+  </script>
+</body>
+
+</html>
